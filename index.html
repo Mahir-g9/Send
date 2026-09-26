@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>4 Digit Connect</title>
+
+<meta name="description" content="4 Digit Connect is a simple device pairing and file transfer tool using a 4 digit code.">
+
+<meta name="keywords" content="4 digit connect, 4 digit code, device pairing, file transfer, file moving, battery pairing, time pairing">
+<meta name="author" content="4 Digit Connect">
+<meta name="robots" content="index, follow">
+<meta name="googlebot" content="index, follow">
+<meta name="theme-color" content="#000000">
+
+<link rel="canonical" href="https://send.page.gd/">
+
+<!-- Discord / Facebook / Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="4 Digit Connect">
+<meta property="og:description" content="Pair devices using a simple 4 digit code and transfer files.">
+<meta property="og:url" content="https://send.page.gd/">
+<meta property="og:site_name" content="4 Digit Connect">
+<meta property="og:image" content="https://send.page.gd/preview.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+
+<!-- X / Twitter -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="4 Digit Connect">
+<meta name="twitter:description" content="Pair devices using a simple 4 digit code and transfer files.">
+<meta name="twitter:image" content="https://send.page.gd/preview.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js"></script>
+<style>
+:root{
+  --bg:#F3F4F1;
+  --surface:#FFFFFF;
+  --border:#DBDFDA;
+  --ink:#171B19;
+  --ink-soft:#6C726D;
+  --accent:#1F5C4A;
+  --accent-ink:#FFFFFF;
+  --amber:#9A7B2E;
+  --danger:#9C3B2E;
+  --radius:14px;
+  --font-ui:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+
+*{ box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+
+html,body{ margin:0; width:100%; min-height:100%; background:var(--bg); color:var(--ink); font-family:var(--font-ui); }
+
+body{ display:flex; justify-content:center; }
+
+#app{ width:100%; max-width:440px; padding:20px 22px 40px; position:relative; }
+
+.screen{ display:flex; flex-direction:column; }
+.hidden{ display:none!important; }
+
+/* Navigation & Header */
+.app-header{
+  display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; min-height:40px;
+}
+.menu-btn{
+  background:none; border:none; padding:8px; cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center; border-radius:8px;
+}
+.menu-btn:active{ background:var(--border); }
+.menu-btn svg{ width:24px; height:24px; }
+
+.nav-drawer{
+  position:absolute; top:60px; right:22px; background:var(--surface); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:0 10px 25px rgba(0,0,0,0.1); width:220px; z-index:100;
+  display:flex; flex-direction:column; overflow:hidden;
+}
+.nav-item{
+  padding:14px 16px; border:none; background:none; text-align:left; font-family:var(--font-ui);
+  font-size:14.5px; font-weight:500; color:var(--ink); cursor:pointer; display:flex; align-items:center; gap:10px;
+}
+.nav-item:not(:last-child){ border-bottom:1px solid var(--border); }
+.nav-item:active{ background:var(--bg); }
+.nav-item.active{ background:var(--bg); color:var(--accent); font-weight:600; }
+
+h1{ margin:0 0 6px; font-size:24px; font-weight:600; letter-spacing:-0.01em; }
+.lead{ margin:0 0 26px; color:var(--ink-soft); font-size:15px; line-height:1.5; }
+.hint{ color:var(--ink-soft); font-size:13.5px; min-height:18px; margin-top:8px; }
+
+/* Buttons */
+.btn{
+  appearance:none; border:1px solid transparent; border-radius:var(--radius);
+  padding:15px 18px; font-family:var(--font-ui); font-size:16px; font-weight:600;
+  cursor:pointer; width:100%; text-align:center;
+}
+.btn.primary{ background:var(--accent); color:var(--accent-ink); }
+.btn.primary:active{ background:#194a3c; }
+.btn.secondary{ background:var(--surface); border:1px solid var(--border); color:var(--ink); }
+.btn:disabled{ opacity:0.5; cursor:default; }
+.btn:focus-visible, input:focus-visible, textarea:focus-visible, .option:focus-visible, .icon-btn:focus-visible{
+  outline:2px solid var(--accent); outline-offset:2px;
+}
+
+.back{
+  align-self:flex-start; display:flex; align-items:center; gap:6px;
+  background:none; border:0; color:var(--ink-soft); font-family:var(--font-ui);
+  font-size:14px; padding:0; margin-bottom:18px; cursor:pointer;
+}
+.back svg{ width:16px; height:16px; }
+
+.link-btn{
+  background:none; border:0; color:var(--danger); font-family:var(--font-ui);
+  font-size:14px; font-weight:600; cursor:pointer; padding:6px 0;
+}
+
+/* Home */
+.intro{ text-align:left; margin-bottom:28px; }
+.mark{
+  width:44px; height:44px; border:1px solid var(--border); border-radius:12px;
+  display:flex; align-items:center; justify-content:center; color:var(--accent);
+  margin-bottom:16px;
+}
+.mark svg{ width:22px; height:22px; }
+
+.options{ display:flex; flex-direction:column; gap:10px; }
+.option{
+  display:flex; align-items:center; gap:14px; text-align:left;
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; cursor:pointer; width:100%;
+}
+.option:active{ background:#EFF1EE; }
+.option-icon{
+  width:38px; height:38px; flex:none; border-radius:10px; background:var(--bg);
+  display:flex; align-items:center; justify-content:center; color:var(--accent);
+}
+.option-icon svg{ width:19px; height:19px; }
+.option-text{ display:flex; flex-direction:column; gap:2px; }
+.option-title{ font-size:15.5px; font-weight:600; }
+.option-desc{ font-size:13px; color:var(--ink-soft); }
+
+/* Code Display */
+.code-box{
+  display:flex; align-items:center; justify-content:center; gap:14px;
+  background:var(--ink); border-radius:var(--radius); padding:26px 20px; margin-bottom:20px;
+}
+#code{
+  font-family:var(--font-mono); font-size:44px; font-weight:700; letter-spacing:10px;
+  color:#F4F5F3; font-variant-numeric:tabular-nums;
+}
+.icon-btn{
+  background:none; border:1px solid #3A403C; border-radius:9px; color:#CBD1CC;
+  width:34px; height:34px; flex:none; display:flex; align-items:center; justify-content:center; cursor:pointer;
+}
+.icon-btn svg{ width:16px; height:16px; }
+
+/* Status Row */
+.status-row{ display:flex; align-items:center; gap:9px; font-size:14.5px; margin-bottom:18px; }
+.dot{ width:9px; height:9px; border-radius:50%; flex:none; background:var(--ink-soft); }
+.dot-connecting{ background:var(--amber); animation:pulse 1.4s ease-in-out infinite; }
+.dot-connected{ background:var(--accent); }
+.dot-error{ background:var(--danger); }
+@keyframes pulse{ 0%,100%{ opacity:1; } 50%{ opacity:0.35; } }
+
+.trust-note{
+  display:flex; align-items:flex-start; gap:10px; font-size:13.5px; color:var(--ink-soft);
+  border-top:1px solid var(--border); padding-top:16px; line-height:1.5;
+}
+.trust-note svg{ width:16px; height:16px; flex:none; margin-top:1px; color:var(--accent); }
+
+/* Code Input */
+input#codeInput{
+  width:100%; border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px; margin-bottom:14px; background:var(--surface); color:var(--ink);
+  text-align:center; font-family:var(--font-mono); font-size:28px; letter-spacing:10px;
+  font-variant-numeric:tabular-nums;
+}
+input#codeInput::placeholder{ color:#C7CBC5; }
+
+/* Sandbox & File Transfer */
+.top-row{ display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; }
+
+.upload-zone{
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:10px;
+  border:1px dashed var(--border); border-radius:var(--radius); padding:28px 18px;
+  cursor:pointer; text-align:center; color:var(--accent); margin-bottom:4px; background:var(--surface);
+}
+.upload-zone svg{ width:24px; height:24px; }
+.upload-title{ font-size:15px; font-weight:600; color:var(--ink); }
+.upload-desc{ font-size:13px; color:var(--ink-soft); }
+
+/* Control Panel */
+.control-panel{
+  display:flex; flex-direction:column; gap:16px; margin-top:16px;
+  padding:16px; border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--surface);
+}
+.control-row{ display:flex; align-items:center; gap:12px; }
+.volume-row{ display:flex; flex-direction:column; gap:6px; }
+.volume-header{ display:flex; justify-content:space-between; align-items:center; font-size:13.5px; font-weight:500; }
+.volume-slider{ width:100%; accent-color:var(--accent); cursor:pointer; height:6px; }
+
+.remote-btn{
+  width:44px; height:44px; flex:none; border-radius:12px; border:1px solid var(--accent);
+  background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; cursor:pointer;
+  transition:transform 0.05s ease;
+}
+.remote-btn:active{ transform:scale(0.95); }
+.remote-btn svg{ width:18px; height:18px; }
+
+.visually-hidden{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
+
+.progress{ width:100%; height:8px; background:var(--border); border-radius:20px; overflow:hidden; margin-top:16px; }
+.progress-bar{ width:0%; height:100%; background:var(--accent); }
+
+.media{ width:100%; margin-top:18px; border-radius:var(--radius); max-height:55vh; background:#000; }
+#receivedName{ margin-top:4px; word-break:break-all; }
+#downloadLink{ display:block; text-align:center; text-decoration:none; margin-top:14px; }
+
+/* Info Pair Panel */
+.info-card{
+  background:var(--surface); border:1px solid var(--border); border-radius:var(--radius);
+  padding:18px; margin-bottom:14px;
+}
+.info-card h3{ margin:0 0 12px; font-size:16px; font-weight:600; color:var(--accent); display:flex; align-items:center; gap:8px; }
+.info-grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; font-size:13.5px; }
+.info-item{ display:flex; flex-direction:column; gap:2px; }
+.info-label{ color:var(--ink-soft); font-size:12px; }
+.info-value{ font-weight:600; font-family:var(--font-mono); }
+
+/* Stopwatch Panel */
+.stopwatch-display{
+  font-family:var(--font-mono); font-size:48px; font-weight:700; text-align:center;
+  background:var(--ink); color:#F4F5F3; padding:24px; border-radius:var(--radius);
+  margin-bottom:20px; font-variant-numeric:tabular-nums;
+}
+.stopwatch-controls{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:16px; }
+.laps-list{
+  max-height:180px; overflow-y:auto; border:1px solid var(--border); border-radius:var(--radius);
+  background:var(--surface); padding:8px 14px; display:flex; flex-direction:column; gap:8px;
+}
+.lap-item{ display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:13.5px; border-bottom:1px solid var(--bg); padding-bottom:4px; }
+
+/* Live Chat Panel */
+.chat-box{
+  display:flex; flex-direction:column; height:320px; border:1px solid var(--border);
+  border-radius:var(--radius); background:var(--surface); overflow:hidden; margin-bottom:14px;
+}
+.chat-messages{
+  flex:1; padding:14px; overflow-y:auto; display:flex; flex-direction:column; gap:12px;
+}
+.chat-bubble{
+  max-width:85%; padding:10px 12px; border-radius:12px; font-size:14px; line-height:1.4;
+  word-break:break-word; white-space:pre-wrap; position:relative;
+  user-select:text; -webkit-user-select:text;
+}
+.chat-bubble.sent{
+  align-self:flex-end; background:var(--accent); color:var(--accent-ink); border-bottom-right-radius:2px;
+}
+.chat-bubble.received{
+  align-self:flex-start; background:var(--bg); color:var(--ink); border-bottom-left-radius:2px; border:1px solid var(--border);
+}
+.chat-bubble-tools{
+  display:flex; justify-content:flex-end; margin-top:4px; opacity:0.8;
+}
+.msg-copy-btn{
+  background:none; border:none; padding:0; font-size:11px; font-weight:600; cursor:pointer; color:inherit; text-decoration:underline;
+}
+.chat-input-area{
+  display:flex; gap:8px; padding:10px; border-top:1px solid var(--border); background:var(--surface);
+}
+.chat-textarea{
+  flex:1; border:1px solid var(--border); border-radius:8px; padding:10px;
+  font-family:var(--font-ui); font-size:14px; resize:none; outline:none; max-height:80px;
+}
+.chat-send-btn{
+  width:44px; height:44px; flex:none; border-radius:8px; background:var(--accent); color:#fff;
+  border:none; cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.chat-send-btn:active{ background:#194a3c; }
+.chat-send-btn svg{ width:18px; height:18px; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- Application Header & Navigation Menu -->
+  <header class="app-header">
+    <div id="headerTitle" style="font-weight:700; font-size:18px;">4-Digit Connect</div>
+    <button id="menuBtn" class="menu-btn" aria-label="Toggle menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </header>
+
+  <!-- Navigation Drawer -->
+  <nav id="navDrawer" class="nav-drawer hidden">
+    <button class="nav-item active" data-target="home">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Home / Transfer
+    </button>
+    <button class="nav-item" data-target="chat">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Live Chat
+    </button>
+    <button class="nav-item" data-target="infoPair">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+      Device Info Pair
+    </button>
+    <button class="nav-item" data-target="stopwatch">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Shared Stopwatch
+    </button>
+  </nav>
+
+  <!-- 1. HOME SCREEN -->
+  <div class="screen" id="home">
+    <div class="intro">
+      <div class="mark">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M8 12h8"/><path d="M9 6H6a4 4 0 0 0 0 8h1"/><path d="M15 6h3a4 4 0 0 1 0 8h-1"/></svg>
+      </div>
+      <h1>4-Digit Connect</h1>
+      <p class="lead">Move files straight from one device to another. Nothing passes through a server, and nothing is stored.</p>
+      <div style="opacity: 70%;">v1.8.26.1</div>
+    </div>
+    <div class="options">
+      <button id="createBtn" class="option">
+        <span class="option-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+        </span>
+        <span class="option-text">
+          <span class="option-title">Create a code</span>
+          <span class="option-desc">Get a 4-digit code to share</span>
+        </span>
+      </button>
+      <button id="connectBtn" class="option">
+        <span class="option-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M9 9h.01M15 9h.01M9 15h.01M15 15h.01"/></svg>
+        </span>
+        <span class="option-text">
+          <span class="option-title">Enter a code</span>
+          <span class="option-desc">Connect using a code you received</span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <!-- CREATE CODE SCREEN -->
+  <div class="screen hidden" id="createScreen">
+    <button class="back" id="backFromCreate">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Back
+    </button>
+    <h1>Your code</h1>
+    <p class="lead">Share this with other devices — everyone who enters it joins in.</p>
+    <div class="code-box">
+      <span id="code">----</span>
+      <button id="copyBtn" class="icon-btn" aria-label="Copy code">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+      </button>
+    </div>
+    <div class="status-row">
+      <span id="createDot" class="dot dot-connecting"></span>
+      <span id="status">Waiting for connection…</span>
+    </div>
+  </div>
+
+  <!-- CONNECT SCREEN -->
+  <div class="screen hidden" id="connectScreen">
+    <button class="back" id="backFromConnect">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg> Back
+    </button>
+    <h1>Enter code</h1>
+    <p class="lead">Type the 4-digit code shown on the other device.</p>
+    <input id="codeInput" type="tel" maxlength="4" inputmode="numeric" placeholder="0000">
+    <button id="startBtn" class="btn primary">Connect</button>
+    <div class="status-row" style="margin-top:16px">
+      <span id="connectDot" class="dot"></span>
+      <span id="connectStatus"></span>
+    </div>
+  </div>
+
+  <!-- MAIN SANDBOX (CONNECTED TRANSFER) SCREEN -->
+  <div class="screen hidden" id="sandbox">
+    <div class="top-row">
+      <div class="status-row" style="margin-bottom:0">
+        <span id="sandboxDot" class="dot dot-connected"></span>
+        <span id="sandboxStatusText">Connected</span>
+      </div>
+      <button id="leaveBtn" class="link-btn">Disconnect</button>
+    </div>
+
+    <!-- Bidirectional File Transfer & Controls Area -->
+    <div id="transferPanel">
+      <label class="upload-zone" for="file">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M5 20h14"/></svg>
+        <span class="upload-title">Choose a file to send</span>
+        <span class="upload-desc">Any file type — video, audio, zip, documents…</span>
+      </label>
+      <input id="file" type="file" class="visually-hidden">
+      <div id="fileInfo" class="hint"></div>
+      
+      <div id="mediaControls" class="control-panel hidden">
+        <div class="control-row">
+          <button id="remotePlayBtn" class="remote-btn" aria-label="Play on receiver">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <span id="remotePlayLabel" class="hint" style="margin:0">Play on connected device</span>
+        </div>
+        
+        <div class="volume-row">
+          <div class="volume-header">
+            <span>Volume Gain</span>
+            <span id="gainVal">1.00x</span>
+          </div>
+          <input type="range" id="volumeSlider" class="volume-slider" min="-3" max="3" step="0.01" value="0">
+        </div>
+      </div>
+    </div>
+
+    <div class="progress" id="progressWrap" style="display:none">
+      <div class="progress-bar" id="bar"></div>
+    </div>
+
+    <div id="receivedName" class="hint"></div>
+    <a id="downloadLink" class="btn primary hidden" download>Download file</a>
+    <video id="video" class="media hidden" controls playsinline crossorigin="anonymous"></video>
+    <audio id="audio" class="media hidden" controls crossorigin="anonymous"></audio>
+    <div id="mediaStatus" class="hint"></div>
+  </div>
+
+  <!-- 2. LIVE CHAT SCREEN -->
+  <div class="screen hidden" id="chatScreen">
+    <h1>Live Chat</h1>
+    <p class="lead">Send unlimited length messages between connected devices.</p>
+
+    <div class="chat-box">
+      <div class="chat-messages" id="chatMessages">
+        <div style="color:var(--ink-soft); font-size:13px; text-align:center; margin:auto;">No messages yet</div>
+      </div>
+      <div class="chat-input-area">
+        <textarea id="chatInput" class="chat-textarea" placeholder="Type a message..." rows="1"></textarea>
+        <button id="chatSendBtn" class="chat-send-btn" aria-label="Send message">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. INFO PAIR SCREEN -->
+  <div class="screen hidden" id="infoPairScreen">
+    <h1>Device Info Pair</h1>
+    <p class="lead">Live synchronized system information between devices.</p>
+    
+    <div class="info-card">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        This Device (Local)
+      </h3>
+      <div class="info-grid">
+        <div class="info-item"><span class="info-label">Time</span><span class="info-value" id="localTime">--:--:--</span></div>
+        <div class="info-item"><span class="info-label">Date</span><span class="info-value" id="localDate">----/--/--</span></div>
+        <div class="info-item"><span class="info-label">Timezone</span><span class="info-value" id="localTz">--</span></div>
+        <div class="info-item"><span class="info-label">Battery</span><span class="info-value" id="localBattery">--</span></div>
+      </div>
+    </div>
+
+    <div class="info-card">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+        Connected Peer (Remote)
+      </h3>
+      <div class="info-grid">
+        <div class="info-item"><span class="info-label">Time</span><span class="info-value" id="remoteTime">--:--:--</span></div>
+        <div class="info-item"><span class="info-label">Date</span><span class="info-value" id="remoteDate">----/--/--</span></div>
+        <div class="info-item"><span class="info-label">Timezone</span><span class="info-value" id="remoteTz">--</span></div>
+        <div class="info-item"><span class="info-label">Battery</span><span class="info-value" id="remoteBattery">--</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. STOPWATCH SCREEN -->
+  <div class="screen hidden" id="stopwatchScreen">
+    <h1>Shared Stopwatch</h1>
+    <p class="lead">Synchronized timer. Control or flag laps from either phone.</p>
+
+    <div class="stopwatch-display" id="stopwatchDisplay">00:00:00.00</div>
+
+    <div class="stopwatch-controls">
+      <button id="swStartBtn" class="btn primary">Start</button>
+      <button id="swFlagBtn" class="btn secondary" disabled>Flag / Lap</button>
+    </div>
+    <button id="swResetBtn" class="btn secondary" style="margin-bottom:16px;">Reset</button>
+
+    <div class="laps-list" id="lapsList">
+      <div style="color:var(--ink-soft); font-size:13px; text-align:center; padding:8px;">No laps recorded</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const CHUNK_SIZE = 64 * 1024;
+
+let peer = null;
+let connections = [];
+let mode = null;
+let sandboxShown = false;
+let activeScreen = "home";
+
+let incoming = null;
+
+/* Web Audio Gain Nodes */
+let audioCtx = null;
+let activeSourceNode = null;
+let gainNode = null;
+
+/* ---------- ELEMENTS ---------- */
+const menuBtn = document.getElementById("menuBtn");
+const navDrawer = document.getElementById("navDrawer");
+
+const home = document.getElementById("home");
+const createScreen = document.getElementById("createScreen");
+const connectScreen = document.getElementById("connectScreen");
+const sandbox = document.getElementById("sandbox");
+const chatScreen = document.getElementById("chatScreen");
+const infoPairScreen = document.getElementById("infoPairScreen");
+const stopwatchScreen = document.getElementById("stopwatchScreen");
+
+const codeDisplay = document.getElementById("code");
+const status = document.getElementById("status");
+const createDot = document.getElementById("createDot");
+
+const codeInput = document.getElementById("codeInput");
+const connectStatus = document.getElementById("connectStatus");
+const connectDot = document.getElementById("connectDot");
+
+const sandboxDot = document.getElementById("sandboxDot");
+const sandboxStatusText = document.getElementById("sandboxStatusText");
+
+const fileInput = document.getElementById("file");
+const fileInfo = document.getElementById("fileInfo");
+
+const mediaControls = document.getElementById("mediaControls");
+const remotePlayBtn = document.getElementById("remotePlayBtn");
+const remotePlayLabel = document.getElementById("remotePlayLabel");
+const volumeSlider = document.getElementById("volumeSlider");
+const gainVal = document.getElementById("gainVal");
+let remotePlaying = false;
+
+const PLAY_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+const PAUSE_ICON = '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14"/><rect x="14" y="5" width="4" height="14"/></svg>';
+
+const progressWrap = document.getElementById("progressWrap");
+const bar = document.getElementById("bar");
+
+const video = document.getElementById("video");
+const audio = document.getElementById("audio");
+
+const receivedName = document.getElementById("receivedName");
+const downloadLink = document.getElementById("downloadLink");
+let currentBlobUrl = null;
+const mediaStatus = document.getElementById("mediaStatus");
+
+/* ---------- NAVIGATION MENU LOGIC ---------- */
+menuBtn.onclick = (e) => {
+  e.stopPropagation();
+  navDrawer.classList.toggle("hidden");
+};
+
+document.addEventListener("click", () => navDrawer.classList.add("hidden"));
+
+document.querySelectorAll(".nav-item").forEach(btn => {
+  btn.onclick = () => {
+    const target = btn.dataset.target;
+    switchScreen(target);
+  };
+});
+
+function switchScreen(target) {
+  navDrawer.classList.add("hidden");
+  document.querySelectorAll(".nav-item").forEach(b => {
+    b.classList.toggle("active", b.dataset.target === target);
+  });
+
+  hide(home);
+  hide(createScreen);
+  hide(connectScreen);
+  hide(sandbox);
+  hide(chatScreen);
+  hide(infoPairScreen);
+  hide(stopwatchScreen);
+
+  activeScreen = target;
+
+  if (target === "home") {
+    if (connections.some(c => c.open)) {
+      show(sandbox);
+    } else {
+      show(home);
+    }
+  } else if (target === "chat") {
+    show(chatScreen);
+  } else if (target === "infoPair") {
+    show(infoPairScreen);
+  } else if (target === "stopwatch") {
+    show(stopwatchScreen);
+  }
+}
+
+/* ---------- HELPERS ---------- */
+function show(el){ el.classList.remove("hidden"); }
+function hide(el){ el.classList.add("hidden"); }
+function randomCode(){ return String(Math.floor(1000 + Math.random() * 9000)); }
+function setDot(el, state){ el.className = "dot dot-" + state; }
+
+function setStatus(text, state){
+  status.textContent = text;
+  if(state) setDot(createDot, state);
+}
+
+function setConnectStatus(text, state){
+  connectStatus.textContent = text;
+  if(state) setDot(connectDot, state);
+}
+
+function formatBytes(bytes){
+  if(!bytes && bytes !== 0) return "";
+  if(bytes < 1024) return bytes + " B";
+  const units = ["KB","MB","GB"];
+  let val = bytes;
+  let i = -1;
+  do{ val /= 1024; i++; }while(val >= 1024 && i < units.length - 1);
+  return val.toFixed(1) + " " + units[i];
+}
+
+function broadcast(msg){
+  connections.forEach(c => { if(c.open) c.send(msg); });
+}
+
+function updateConnectionStatus(){
+  const n = connections.length;
+  setDot(sandboxDot, n > 0 ? "connected" : "error");
+  sandboxStatusText.textContent =
+    n === 0 ? "No devices connected" :
+    n === 1 ? "1 device connected" :
+    n + " devices connected";
+}
+
+function updateRemoteButton(playing){
+  remotePlaying = playing;
+  remotePlayBtn.innerHTML = playing ? PAUSE_ICON : PLAY_ICON;
+  remotePlayLabel.textContent = playing ? "Pause on connected device" : "Play on connected device";
+}
+
+function bindPlaybackReporting(el){
+  el.addEventListener("play", () => broadcast({ type:"playback-state", playing:true }));
+  el.addEventListener("pause", () => broadcast({ type:"playback-state", playing:false }));
+}
+bindPlaybackReporting(video);
+bindPlaybackReporting(audio);
+
+/* Remote Play Button Click Handler */
+remotePlayBtn.onclick = () => {
+  if(connections.filter(c => c.open).length === 0) return;
+  const targetState = !remotePlaying;
+  updateRemoteButton(targetState);
+  broadcast({ type:"control", action: targetState ? "play" : "pause" });
+};
+
+/* Volume Slider Handler */
+volumeSlider.oninput = () => {
+  const logVal = parseFloat(volumeSlider.value);
+  const gain = Math.pow(10, logVal);
+  if(gain >= 100) gainVal.textContent = gain.toFixed(0) + "x";
+  else if(gain >= 10) gainVal.textContent = gain.toFixed(1) + "x";
+  else if(gain >= 0.1) gainVal.textContent = gain.toFixed(2) + "x";
+  else gainVal.textContent = gain.toFixed(4) + "x";
+
+  broadcast({ type:"control", action:"volume", value:gain });
+};
+
+/* Web Audio API Context */
+function unlockAudioContext() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (audioCtx.state === "suspended") {
+    audioCtx.resume();
+  }
+  const buffer = audioCtx.createBuffer(1, 1, 22050);
+  const source = audioCtx.createBufferSource();
+  source.buffer = buffer;
+  source.connect(audioCtx.destination);
+  source.start(0);
+}
+
+function setupAudioGraph(element) {
+  unlockAudioContext();
+  if(activeSourceNode) { try { activeSourceNode.disconnect(); } catch(e){} }
+  activeSourceNode = audioCtx.createMediaElementSource(element);
+  if(!gainNode) {
+    gainNode = audioCtx.createGain();
+    gainNode.gain.value = 1.0;
+  }
+  activeSourceNode.connect(gainNode);
+  gainNode.connect(audioCtx.destination);
+}
+
+function setReceiverGain(gainValue) {
+  if(gainNode && audioCtx) {
+    gainNode.gain.setValueAtTime(gainValue, audioCtx.currentTime);
+  }
+}
+
+function clearMediaUI(){
+  video.pause(); audio.pause();
+  video.removeAttribute("src"); audio.removeAttribute("src");
+  video.load(); audio.load();
+  hide(video); hide(audio); hide(downloadLink);
+  downloadLink.removeAttribute("href");
+}
+
+function revokeCurrentUrl(){
+  if(currentBlobUrl){ try{ URL.revokeObjectURL(currentBlobUrl); }catch(e){} currentBlobUrl = null; }
+}
+
+function resetMedia(){
+  clearMediaUI();
+  revokeCurrentUrl();
+  if(audioCtx) {
+    try{ audioCtx.close(); }catch(e){}
+    audioCtx = null; activeSourceNode = null; gainNode = null;
+  }
+}
+
+function resetToHome(){
+  connections.forEach(c => { try{ c.close(); }catch(e){} });
+  connections = [];
+  if(peer){ try{ peer.destroy(); }catch(e){} }
+  peer = null; mode = null; incoming = null; sandboxShown = false;
+
+  resetMedia();
+  progressWrap.style.display = "none";
+  bar.style.width = "0%";
+  hide(mediaControls);
+  updateRemoteButton(false);
+  volumeSlider.value = 0;
+  gainVal.textContent = "1.00x";
+  fileInfo.textContent = "";
+  receivedName.textContent = "";
+  mediaStatus.textContent = "";
+  fileInput.value = "";
+  codeInput.value = "";
+  setConnectStatus("");
+  
+  chatMessages.innerHTML = '<div style="color:var(--ink-soft); font-size:13px; text-align:center; margin:auto;">No messages yet</div>';
+
+  switchScreen("home");
+}
+
+/* ---------- CREATE & CONNECT PEER ---------- */
+document.getElementById("createBtn").onclick = () => {
+  mode = "create";
+  switchScreen("home");
+  hide(home);
+  show(createScreen);
+  setDot(createDot, "connecting");
+  const code = randomCode();
+  codeDisplay.textContent = code;
+  createPeer(code);
+};
+
+function createPeer(code){
+  peer = new Peer(code, { debug:2 });
+
+  peer.on("open", id => {
+    codeDisplay.textContent = id;
+    setStatus("Waiting for connection…", "connecting");
+  });
+
+  peer.on("connection", conn => {
+    connections.push(conn);
+    setupConnection(conn);
+  });
+
+  peer.on("error", err => {
+    if(err.type === "unavailable-id"){
+      peer.destroy();
+      const newCode = randomCode();
+      codeDisplay.textContent = newCode;
+      createPeer(newCode);
+    }else{ setStatus("Connection error", "error"); }
+  });
+
+  peer.on("disconnected", () => setStatus("Disconnected", "error"));
+}
+
+document.getElementById("backFromCreate").onclick = resetToHome;
+
+document.getElementById("copyBtn").onclick = async () => {
+  const btn = document.getElementById("copyBtn");
+  try{
+    await navigator.clipboard.writeText(codeDisplay.textContent);
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M20 6L9 17l-5-5"/></svg>';
+    setTimeout(() => {
+      btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>';
+    }, 1500);
+  }catch(e){}
+};
+
+document.getElementById("connectBtn").onclick = () => {
+  mode = "connect";
+  switchScreen("home");
+  hide(home);
+  show(connectScreen);
+  codeInput.focus();
+};
+
+document.getElementById("backFromConnect").onclick = resetToHome;
+
+document.getElementById("startBtn").onclick = () => {
+  const code = codeInput.value.trim();
+  if(!/^\d{4}$/.test(code)){
+    setConnectStatus("Enter a 4-digit code", "error");
+    return;
+  }
+  unlockAudioContext();
+  setConnectStatus("Connecting…", "connecting");
+  peer = new Peer(undefined, { debug:2 });
+
+  peer.on("open", () => {
+    const conn = peer.connect(code, { reliable:true });
+    connections = [conn];
+    setupConnection(conn);
+  });
+
+  peer.on("error", () => setConnectStatus("Could not connect", "error"));
+};
+
+function setupConnection(conn){
+  conn.on("open", () => {
+    updateConnectionStatus();
+    if(!sandboxShown){
+      sandboxShown = true;
+      setStatus("Connected!", "connected");
+      setConnectStatus("Connected!", "connected");
+      setTimeout(() => {
+        switchScreen("home");
+      }, 400);
+    }
+    sendDeviceInfo();
+  });
+
+  conn.on("data", data => handleData(data));
+  conn.on("close", () => {
+    connections = connections.filter(c => c !== conn);
+    updateConnectionStatus();
+  });
+  conn.on("error", () => updateConnectionStatus());
+}
+
+document.getElementById("leaveBtn").onclick = resetToHome;
+
+/* ---------- BIDIRECTIONAL FILE TRANSFER ---------- */
+fileInput.onchange = async () => {
+  const file = fileInput.files[0];
+  if(!file) return;
+
+  const openConnections = connections.filter(c => c.open);
+  if(openConnections.length === 0){
+    fileInfo.textContent = "Not connected to any peer.";
+    return;
+  }
+
+  fileInfo.textContent = "Sending " + file.name + " · " + formatBytes(file.size);
+  progressWrap.style.display = "block";
+  bar.style.width = "0%";
+  hide(mediaControls);
+  updateRemoteButton(false);
+
+  broadcast({ type:"file-start", name:file.name, mime:file.type, size:file.size });
+
+  let offset = 0;
+  while(offset < file.size){
+    const blob = file.slice(offset, offset + CHUNK_SIZE);
+    const buffer = await blob.arrayBuffer();
+    broadcast({ type:"file-chunk", data:buffer });
+    offset += buffer.byteLength;
+    bar.style.width = Math.min(100, (offset / file.size) * 100) + "%";
+    await new Promise(requestAnimationFrame);
+  }
+
+  broadcast({ type:"file-end" });
+  fileInfo.textContent = "Sent " + file.name + " · " + formatBytes(file.size);
+  if(file.type.startsWith("audio/") || file.type.startsWith("video/")){
+    show(mediaControls);
+  }
+};
+
+/* ---------- INCOMING DATA DISPATCH ---------- */
+function handleData(data){
+  if(!data || !data.type) return;
+
+  if(data.type === "file-start"){
+    incoming = { name:data.name, mime:data.mime, size:data.size, chunks:[], received:0 };
+    progressWrap.style.display = "block";
+    bar.style.width = "0%";
+    receivedName.textContent = "Receiving " + data.name + " · " + formatBytes(data.size);
+    mediaStatus.textContent = "Receiving file…";
+    return;
+  }
+
+  if(data.type === "file-chunk"){
+    if(!incoming) return;
+    incoming.chunks.push(data.data);
+    incoming.received += data.data.byteLength;
+    bar.style.width = Math.min(100, incoming.received / incoming.size * 100) + "%";
+    return;
+  }
+
+  if(data.type === "file-end"){
+    finishReceiving();
+    return;
+  }
+
+  if(data.type === "control"){
+    const el = !video.classList.contains("hidden") ? video : audio;
+    if(data.action === "play"){
+      if(audioCtx && audioCtx.state === "suspended") audioCtx.resume();
+      el.play().catch(() => { mediaStatus.textContent = "Tap play to allow playback."; });
+    }else if(data.action === "pause"){
+      el.pause();
+    }else if(data.action === "volume"){
+      setReceiverGain(data.value);
+    }
+    return;
+  }
+
+  if(data.type === "playback-state"){
+    updateRemoteButton(data.playing);
+    return;
+  }
+
+  if(data.type === "device-info"){
+    updateRemoteInfoUI(data.info);
+    return;
+  }
+
+  if(data.type === "stopwatch"){
+    handleStopwatchMessage(data);
+    return;
+  }
+
+  if(data.type === "chat-message"){
+    renderChatMessage(data.text, "received");
+    return;
+  }
+}
+
+function finishReceiving(){
+  if(!incoming) return;
+  const mime = incoming.mime || "application/octet-stream";
+  const blob = new Blob(incoming.chunks, { type:mime });
+
+  revokeCurrentUrl();
+  clearMediaUI();
+
+  const url = URL.createObjectURL(blob);
+  currentBlobUrl = url;
+
+  receivedName.textContent = incoming.name + " · " + formatBytes(incoming.size);
+  mediaStatus.textContent = "Received successfully.";
+
+  downloadLink.href = url;
+  downloadLink.download = incoming.name;
+  show(downloadLink);
+
+  if(mime.startsWith("video/")){
+    video.src = url; show(video);
+    setupAudioGraph(video); attemptPlay(video);
+  }else if(mime.startsWith("audio/")){
+    audio.src = url; show(audio);
+    setupAudioGraph(audio); attemptPlay(audio);
+  }
+
+  incoming = null;
+  bar.style.width = "100%";
+}
+
+async function attemptPlay(element){
+  try{
+    if(audioCtx && audioCtx.state === "suspended") await audioCtx.resume();
+    await element.play();
+    mediaStatus.textContent = "Playing.";
+  }catch(error){
+    mediaStatus.textContent = "Received. Tap play to start.";
+  }
+}
+
+/* ---------- 1. LIVE CHAT LOGIC ---------- */
+const chatMessages = document.getElementById("chatMessages");
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+
+function sendChatMessage() {
+  const text = chatInput.value;
+  if (!text.trim()) return;
+
+  renderChatMessage(text, "sent");
+  broadcast({ type: "chat-message", text: text });
+
+  chatInput.value = "";
+  chatInput.style.height = "auto";
+}
+
+function renderChatMessage(text, direction) {
+  if (chatMessages.querySelector("div") && chatMessages.children.length === 1 && chatMessages.children[0].textContent === "No messages yet") {
+    chatMessages.innerHTML = "";
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = `chat-bubble ${direction}`;
+  
+  const textContainer = document.createElement("div");
+  textContainer.textContent = text;
+  bubble.appendChild(textContainer);
+
+  const tools = document.createElement("div");
+  tools.className = "chat-bubble-tools";
+  
+  const copyBtn = document.createElement("button");
+  copyBtn.className = "msg-copy-btn";
+  copyBtn.textContent = "Copy";
+  copyBtn.onclick = (e) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(text).then(() => {
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => { copyBtn.textContent = "Copy"; }, 1500);
+    }).catch(() => {});
+  };
+
+  tools.appendChild(copyBtn);
+  bubble.appendChild(tools);
+
+  chatMessages.appendChild(bubble);
+  chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+chatSendBtn.onclick = sendChatMessage;
+
+chatInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendChatMessage();
+  }
+});
+
+chatInput.addEventListener("input", () => {
+  chatInput.style.height = "auto";
+  chatInput.style.height = Math.min(chatInput.scrollHeight, 80) + "px";
+});
+
+/* ---------- 2. INFO PAIR LOGIC ---------- */
+async function getBatteryStatus() {
+  if ('getBattery' in navigator) {
+    try {
+      const b = await navigator.getBattery();
+      return `${Math.round(b.level * 100)}% (${b.charging ? 'Charging' : 'Running'})`;
+    } catch(e) {}
+  }
+  return "N/A";
+}
+
+async function sendDeviceInfo() {
+  const now = new Date();
+  const battery = await getBatteryStatus();
+  const info = {
+    time: now.toTimeString().split(' ')[0],
+    date: now.toISOString().split('T')[0],
+    tz: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    battery: battery
+  };
+
+  // Update Local UI
+  document.getElementById("localTime").textContent = info.time;
+  document.getElementById("localDate").textContent = info.date;
+  document.getElementById("localTz").textContent = info.tz;
+  document.getElementById("localBattery").textContent = info.battery;
+
+  broadcast({ type: "device-info", info: info });
+}
+
+function updateRemoteInfoUI(info) {
+  document.getElementById("remoteTime").textContent = info.time || "--";
+  document.getElementById("remoteDate").textContent = info.date || "--";
+  document.getElementById("remoteTz").textContent = info.tz || "--";
+  document.getElementById("remoteBattery").textContent = info.battery || "--";
+}
+
+setInterval(sendDeviceInfo, 1000);
+
+/* ---------- 3. SHARED STOPWATCH LOGIC ---------- */
+let swRunning = false;
+let swStartTime = 0;
+let swElapsedTime = 0;
+let swTimerInterval = null;
+let swLaps = [];
+
+const swDisplay = document.getElementById("stopwatchDisplay");
+const swStartBtn = document.getElementById("swStartBtn");
+const swFlagBtn = document.getElementById("swFlagBtn");
+const swResetBtn = document.getElementById("swResetBtn");
+const lapsList = document.getElementById("lapsList");
+
+function formatTime(ms) {
+  const date = new Date(ms);
+  const m = String(date.getUTCMinutes()).padStart(2, '0');
+  const s = String(date.getUTCSeconds()).padStart(2, '0');
+  const h = String(Math.floor(ms / 3600000)).padStart(2, '0');
+  const cs = String(Math.floor(date.getUTCMilliseconds() / 10)).padStart(2, '0');
+  return `${h}:${m}:${s}.${cs}`;
+}
+
+function updateSwDisplay() {
+  const total = swRunning ? (Date.now() - swStartTime + swElapsedTime) : swElapsedTime;
+  swDisplay.textContent = formatTime(total);
+}
+
+function startStopwatch(startTime, elapsed, sync = false) {
+  swRunning = true;
+  swStartTime = startTime || Date.now();
+  swElapsedTime = elapsed || 0;
+  clearInterval(swTimerInterval);
+  swTimerInterval = setInterval(updateSwDisplay, 30);
+  swStartBtn.textContent = "Pause";
+  swFlagBtn.disabled = false;
+
+  if(!sync) {
+    broadcast({ type: "stopwatch", action: "start", startTime: swStartTime, elapsed: swElapsedTime });
+  }
+}
+
+function pauseStopwatch(sync = false) {
+  if(!swRunning) return;
+  swRunning = false;
+  swElapsedTime += Date.now() - swStartTime;
+  clearInterval(swTimerInterval);
+  updateSwDisplay();
+  swStartBtn.textContent = "Start";
+  swFlagBtn.disabled = true;
+
+  if(!sync) {
+    broadcast({ type: "stopwatch", action: "pause", elapsed: swElapsedTime });
+  }
+}
+
+function resetStopwatch(sync = false) {
+  swRunning = false;
+  clearInterval(swTimerInterval);
+  swStartTime = 0;
+  swElapsedTime = 0;
+  swLaps = [];
+  updateSwDisplay();
+  renderLaps();
+  swStartBtn.textContent = "Start";
+  swFlagBtn.disabled = true;
+
+  if(!sync) {
+    broadcast({ type: "stopwatch", action: "reset" });
+  }
+}
+
+function flagLap(sync = false) {
+  if(!swRunning) return;
+  const current = Date.now() - swStartTime + swElapsedTime;
+  swLaps.unshift(formatTime(current));
+  renderLaps();
+
+  if(!sync) {
+    broadcast({ type: "stopwatch", action: "flag", laps: swLaps });
+  }
+}
+
+function renderLaps() {
+  if(swLaps.length === 0) {
+    lapsList.innerHTML = '<div style="color:var(--ink-soft); font-size:13px; text-align:center; padding:8px;">No laps recorded</div>';
+    return;
+  }
+  lapsList.innerHTML = swLaps.map((lap, index) => `
+    <div class="lap-item">
+      <span>Lap ${swLaps.length - index}</span>
+      <span>${lap}</span>
+    </div>
+  `).join('');
+}
+
+swStartBtn.onclick = () => {
+  if(swRunning) pauseStopwatch();
+  else startStopwatch(Date.now(), swElapsedTime);
+};
+swFlagBtn.onclick = () => flagLap();
+swResetBtn.onclick = () => resetStopwatch();
+
+function handleStopwatchMessage(data) {
+  if(data.action === "start") startStopwatch(data.startTime, data.elapsed, true);
+  else if(data.action === "pause") { swElapsedTime = data.elapsed; pauseStopwatch(true); }
+  else if(data.action === "reset") resetStopwatch(true);
+  else if(data.action === "flag") { swLaps = data.laps; renderLaps(); }
+}
+
+/* ---------- INPUT SANITIZATION ---------- */
+codeInput.addEventListener("input", () => {
+  codeInput.value = codeInput.value.replace(/\D/g, "");
+});
+
+window.addEventListener("pagehide", () => {
+  connections.forEach(c => { try{ c.close(); }catch(e){} });
+  if(peer){ try{ peer.destroy(); }catch(e){} }
+});
+</script>
+</body>
+</html>
